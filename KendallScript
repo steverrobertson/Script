@@ -3,6 +3,10 @@ config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
 config ssid		GlenVista1CF0
 config password		stevieray01
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
 config ntp_server	1.de.pool.ntp.org
 %config speed		160
 
@@ -19,7 +23,7 @@ do
 
 	% Status of the relay
 	setvar $relay_status=0
-	gpio_out 14 $relay_status
+	gpio_out 12 $relay_status
 	% gpio_out 13 not ($relay_status)
 
 	% Blink flag
@@ -27,11 +31,11 @@ do
 
 	% Command topic
 	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
-	setvar $command_topic="WaterHeater/POWER"
+	setvar $command_topic="cmnd/WaterHeater/POWER"
 	% setvar $this_data "TEST"
 
 	% Voltage topic
-	setvar $Voltage_topic="Voltage/VOLTS"
+	setvar $Voltage_topic="tele/Voltage/VOLTS"
 
 	% Status topic
 	% setvar $status_topic="/martinshome/switch/" | $device_number | "/status"
@@ -70,13 +74,13 @@ do
 	if $this_data = "on" then
 		setvar $relay_status = 1
 		% setvar $blink = 0
-		gpio_out 14 $relay_status
+		gpio_out 12 $relay_status
 		% gpio_out 13 not ($relay_status)
 	else
 	    if $this_data = "off" then
 		setvar $relay_status = 0
 		% setvar $blink = 0
-		gpio_out 14 $relay_status
+		gpio_out 12 $relay_status
 		% gpio_out 13 not ($relay_status)
 	    endif
 	endif
@@ -91,13 +95,13 @@ do
 	if $this_data > 54 then
 		setvar $relay_status = 1
 		% setvar $blink = 0
-		gpio_out 14 $relay_status
+		gpio_out 12 $relay_status
 		% gpio_out 13 not ($relay_status)
 	endif
 %        if 52.5 > $this_data then
 %	        setvar $relay_status = 0
 %		% setvar $blink = 0
-%		gpio_out 14 $relay_status
+%		gpio_out 12 $relay_status
 %		% gpio_out 13 not ($relay_status)
 %   	endif
 
