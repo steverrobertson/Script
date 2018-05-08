@@ -92,7 +92,7 @@ on topic local $Voltage_topic
 do
 	setvar $int = csvstr($this_data, 0, ".")
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
-	setvar $fixed_point = 10 * $int substr($frac, 0, 1)
+	setvar $fixed_point = 10 * ($int | substr($frac, 0, 1))
 	
 	println "Voltage floated is " | $fixed_point
 	
