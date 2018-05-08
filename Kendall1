@@ -1,7 +1,7 @@
 % Config params, overwrite any previous settings from the commandline
 config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
-config ssid		ROBERTSON-SECURITY
+config ssid		GlenVista1CF0
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
 config mqtt_host	m14.cloudmqtt.com
@@ -63,7 +63,7 @@ do
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
 		gpio_out 12 $relay_status
-		$run=0
+		setvar $run=0
 		gpio_out 13 not ($relay_status)
    	endif
 
