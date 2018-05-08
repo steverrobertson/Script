@@ -28,7 +28,6 @@ do
 	setvar $Voltage_topic="tele/Voltage/VOLTS"
 
 	% Status topic
-	% setvar $status_topic="/martinshome/switch/" | $device_number | "/status"
 	setvar $status_topic="WaterHeater/PWR"
 
 	publish local $status_topic $relay_status retained
@@ -50,6 +49,8 @@ do
 	
 on topic local $Voltage_topic
 do
+	publish remote $Voltage_topic $this_data
+
 	setvar $int = csvstr($this_data, 0, ".")
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
@@ -65,8 +66,6 @@ do
 		$run=0
 		gpio_out 13 not ($relay_status)
    	endif
-
-	publish remote $Voltage_topic $this_data
 
 % Checking timer
 on timer 1
