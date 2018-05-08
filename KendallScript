@@ -1,5 +1,5 @@
 % Config params, overwrite any previous settings from the commandline
-config ap_ssid 		Kendall-MQTT-SERVICES
+config ap_ssid 		Kendall_MQTT_SERVICES
 config ap_password	stevieray01
 config ssid		ROBERTSON-SECURITY
 config password		stevieray01
