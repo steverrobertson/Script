@@ -80,15 +80,6 @@ do
 		% gpio_out 13 not ($relay_status)
 	    endif
 	endif
-	% if $this_data = "toggle" then
-	%	setvar $relay_status = not ($relay_status)
-	%	gpio_out 12 $relay_status
-	%	gpio_out 13 not ($relay_status)
-	% endif
-	% if $this_data = "blink" then
-	%	setvar $blink = 1
-	%	settimer 1 500
-	% endif
 
 	publish local $status_topic $relay_status retained
 	publish remote $status_topic $relay_status retained
@@ -112,21 +103,3 @@ do
 	endif
 
 	publish remote $Voltage_topic $this_data
-
-% The local pushbutton
-% on gpio_interrupt 0 pullup
-% do
-	% println "New state GPIO 0: " | $this_gpio
-	% if $this_gpio = 0 then
-	%	setvar $blink = 0
-	%	publish local $command_topic "toggle"
-	% endif
-
-
-% Blinking
-%on timer 1
-%do
-%	if $blink = 1 then
-%		publish local $command_topic "toggle"
-%		settimer 1 500
-%	endif
