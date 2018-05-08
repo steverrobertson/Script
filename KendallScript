@@ -23,8 +23,7 @@ do
 	% Command topic
 	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
 	setvar $command_topic="cmnd/WaterHeater/POWER"
-	% setvar $this_data "TEST"
-
+	
 	% Voltage topic
 	setvar $Voltage_topic="tele/Voltage/VOLTS"
 
@@ -35,15 +34,12 @@ do
 	publish local $status_topic $relay_status retained
 
 	% local subscriptions once in 'init'
-	subscribe local $command_topic
 	subscribe local $Voltage_topic
 
 % Now the MQTT client init, this is done each time the client connects
 on mqttconnect
 do
 	% remote subscriptions for each connection in 'mqttconnect'
-	subscribe remote $command_topic
-
 	publish remote $status_topic $relay_status retained
 
 % Now the events, checked whenever something happens
