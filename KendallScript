@@ -3,6 +3,10 @@ config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
 config ssid		GlenVista1CF0
 config password		stevieray01
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
 config ntp_server	1.de.pool.ntp.org
 %config speed		160
 
@@ -20,7 +24,7 @@ do
 	% Status of the relay
 	setvar $relay_status=0
 	gpio_out 12 $relay_status
-	% gpio_out 13 not ($relay_status)
+	gpio_out 13 not ($relay_status)
 
 	% Blink flag
 	% setvar $blink=0
@@ -71,13 +75,13 @@ do
 		setvar $relay_status = 1
 		% setvar $blink = 0
 		gpio_out 12 $relay_status
-		% gpio_out 13 not ($relay_status)
+		gpio_out 13 not ($relay_status)
 	else
 	    if $this_data = "off" then
 		setvar $relay_status = 0
 		% setvar $blink = 0
 		gpio_out 12 $relay_status
-		% gpio_out 13 not ($relay_status)
+		gpio_out 13 not ($relay_status)
 	    endif
 	endif
 
@@ -92,7 +96,7 @@ do
 		setvar $relay_status = 1
 		% setvar $blink = 0
 		gpio_out 12 $relay_status
-		% gpio_out 13 not ($relay_status)
+		gpio_out 13 not ($relay_status)
 	endif
 %        if 52.5 > $this_data then
 %	        setvar $relay_status = 0
