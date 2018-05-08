@@ -13,21 +13,11 @@ config ntp_server	1.de.pool.ntp.org
 % Now the initialization, this is done once after booting
 on init
 do
-	% Device number
-	% setvar $device_number = 1
-
-	% @<num> vars are stored in flash and are persistent even after reboot 
-	% setvar $run = @1 + 1
-	% setvar @1 = $run
-	% println "This is boot no "|$run
 
 	% Status of the relay
 	setvar $relay_status=0
 	gpio_out 12 $relay_status
 	gpio_out 13 not ($relay_status)
-
-	% Blink flag
-	% setvar $blink=0
 
 	% Command topic
 	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
