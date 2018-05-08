@@ -4,10 +4,6 @@ config ap_password	stevieray01
 config ssid		ROBERTSON-SECURITY
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
-config mqtt_host	m14.cloudmqtt.com
-config mqtt_port	19801
-config mqtt_user	htzkfqlx
-config mqtt_password	PLsADzYDYbdX
 %config speed		160
 
 % Now the initialization, this is done once after booting
