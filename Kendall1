@@ -1,0 +1,75 @@
+% Config params, overwrite any previous settings from the commandline
+config ap_ssid 		MQTT_SERVICES
+config ap_password	stevieray01
+config ssid		ROBERTSON-SECURITY
+config password		stevieray01
+config ntp_server	1.de.pool.ntp.org
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
+%config speed		160
+
+% Now the initialization, this is done once after booting
+on init
+do
+
+	% Status of the relay
+	setvar $relay_status=0
+	setvar $run=0
+	gpio_out 12 $relay_status
+	gpio_out 13 not ($relay_status)
+
+	% Command topic
+	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
+	setvar $command_topic="cmnd/WaterHeater/POWER"
+	
+	% Voltage topic
+	setvar $Voltage_topic="tele/Voltage/VOLTS"
+
+	% Status topic
+	setvar $status_topic="WaterHeater/PWR"
+
+	publish local $status_topic $relay_status retained
+
+	% local subscriptions once in 'init'
+	subscribe local $Voltage_topic
+
+% Now the MQTT client init, this is done each time the client connects
+on mqttconnect
+do
+	% remote subscriptions for each connection in 'mqttconnect'
+	publish remote $status_topic $relay_status retained
+
+% Now the events, checked whenever something happens
+
+% Is there a local command?
+	publish local $status_topic $relay_status retained
+	publish remote $status_topic $relay_status retained
+	
+on topic local $Voltage_topic
+do
+	publish remote $Voltage_topic $this_data
+
+	setvar $int = csvstr($this_data, 0, ".")
+	setvar $frac = csvstr($this_data, 1, ".") | "0"
+	setvar $fixed_point = $int | substr($frac, 0, 1)
+	
+	if $fixed_point > 545 then
+		setvar $relay_status = 1
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
+	endif
+	if 510 > $fixed_point then
+		setvar $relay_status = 0
+		gpio_out 12 $relay_status
+		$run=0
+		gpio_out 13 not ($relay_status)
+   	endif
+
+% Checking timer
+on timer 1
+do
+	setvar $run = $run + 1
+	println "$run= "|$run
+	settimer 1 60000
