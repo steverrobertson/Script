@@ -1,7 +1,7 @@
 % Config params, overwrite any previous settings from the commandline
 config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
-config ssid		ROBERTSON-SECURITY
+config ssid		GlenVista1CF0
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
 config mqtt_host	m14.cloudmqtt.com
