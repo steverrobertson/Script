@@ -1,3 +1,71 @@
+% Config params, overwrite any previous settings from the commandline
+config ap_ssid 		Kendall-MQTT-SERVICES
+config ap_password	stevieray01
+config ssid		ROBERTSON-SECURITY
+config password		stevieray01
+config ntp_server	1.de.pool.ntp.org
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
+%config speed		160
+
+% Now the initialization, this is done once after booting
+on init
+do
+	% Device number
+	% setvar $device_number = 1
+
+	% @<num> vars are stored in flash and are persistent even after reboot 
+	% setvar $run = @1 + 1
+	% setvar @1 = $run
+	% println "This is boot no "|$run
+
+	% Status of the relay
+	setvar $relay_status=0
+	gpio_out 14 $relay_status
+	% gpio_out 13 not ($relay_status)
+
+	% Blink flag
+	% setvar $blink=0
+
+	% Command topic
+	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
+	setvar $command_topic="WaterHeater/POWER"
+	% setvar $this_data "TEST"
+
+	% Voltage topic
+	setvar $Voltage_topic="Voltage/VOLTS"
+
+	% Status topic
+	% setvar $status_topic="/martinshome/switch/" | $device_number | "/status"
+	setvar $status_topic="WaterHeater/PWR"
+
+	publish local $status_topic $relay_status retained
+
+	% local subscriptions once in 'init'
+	subscribe local $command_topic
+	subscribe local $Voltage_topic
+
+% Now the MQTT client init, this is done each time the client connects
+on mqttconnect
+do
+	% remote subscriptions for each connection in 'mqttconnect'
+	subscribe remote $command_topic
+
+	publish remote $status_topic $relay_status retained
+
+% Now the events, checked whenever something happens
+
+% Is there a remote command?
+on topic remote $command_topic
+do
+	println "Received remote command: " | $this_data
+
+	% republish this locally - this does the action
+	% publish local $command_topic $this_data
+
+
 % Is there a local command?
 on topic local $command_topic
 do
