@@ -53,9 +53,9 @@ do
 on topic local $Season_topic
 do
 	if $Season = "Summer" then
-		$Season = "Winter"
+		setvar $Season = "Winter"
 	else
-		$Season = "Summer"
+		setvar $Season = "Summer"
 	endif
 	publish local "stat/season" $Season
 	publish remote "stat/season" $Season
@@ -71,7 +71,7 @@ do
 		setvar $run = 0
 	endif
 	if $Season = "Winter" then
-		$run=0
+		setvar $run=0
 	endif
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
