@@ -48,29 +48,34 @@ do
 on topic local $Voltage_topic
 do
 
+	publish remote $Voltage_topic $this_data
+
 	setvar $int = csvstr($this_data, 0, ".")
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
 	
 	if 542 > $fixed_point then
 		setvar $run = 0
+		publish local $status_topic $relay_status retained
+		publish remote $status_topic $relay_status retained
 	endif
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
+		publish local $status_topic $relay_status retained
+		publish remote $status_topic $relay_status retained
 	endif
 	if $run > 4 then
 		setvar $relay_status = 1
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
+		publish local $status_topic $relay_status retained
+		publish remote $status_topic $relay_status retained
 	endif
 
 	println "$run= "|$run
 	
-	publish remote $Voltage_topic $this_data
-	publish local $status_topic $relay_status retained
-	publish remote $status_topic $relay_status retained
 
 % Checking timer
 on timer 1
