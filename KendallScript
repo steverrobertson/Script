@@ -4,6 +4,10 @@ config ap_password	stevieray01
 config ssid		GlenVista1CF0
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
 %config speed		160
 
 % Now the initialization, this is done once after booting
@@ -16,10 +20,6 @@ do
 	gpio_out 12 $relay_status
 	gpio_out 13 not ($relay_status)
 
-	% Command topic
-	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
-	setvar $command_topic="cmnd/WaterHeater/POWER"
-	
 	% Voltage topic
 	setvar $Voltage_topic="tele/Voltage/VOLTS"
 
@@ -47,29 +47,34 @@ do
 	
 on topic local $Voltage_topic
 do
-	publish remote $Voltage_topic $this_data
 
 	setvar $int = csvstr($this_data, 0, ".")
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
 	
-	println "$run= "|$run
-	
-	if $fixed_point > 545 then
-		setvar $relay_status = 1
-		gpio_out 12 $relay_status
-		gpio_out 13 not ($relay_status)
+	if 542 > $fixed_point then
+		setvar $run = 0
 	endif
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
 		gpio_out 12 $relay_status
-		setvar $run = 0
 		gpio_out 13 not ($relay_status)
-   	endif
+	endif
+	if $run > 4 then
+		setvar $relay_status = 1
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
+	endif
+
+	println "$run= "|$run
+	
+	publish remote $Voltage_topic $this_data
+	publish local $status_topic $relay_status retained
+	publish remote $status_topic $relay_status retained
 
 % Checking timer
 on timer 1
 do
-	setvar $run = $run + 1
 	println "$run= "|$run
+	setvar $run = $run + 1
 	settimer 1 60000
