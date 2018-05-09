@@ -4,6 +4,10 @@ config ap_password	stevieray01
 config ssid		GlenVista1CF0
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
 %config speed		160
 
 % Now the initialization, this is done once after booting
@@ -19,6 +23,10 @@ do
 	% Voltage topic
 	setvar $Voltage_topic="tele/Voltage/VOLTS"
 
+	% Season topic
+	setvar $Season_topic="season/SET"
+	setvar $Season="Summer"
+
 	% Status topic
 	setvar $status_topic="WaterHeater/PWR"
 
@@ -28,6 +36,7 @@ do
 	subscribe local $Voltage_topic
 	
 	settimer 1 500
+	settimer 2 1000
 
 % Now the MQTT client init, this is done each time the client connects
 on mqttconnect
@@ -41,20 +50,28 @@ do
 	publish local $status_topic $relay_status retained
 	publish remote $status_topic $relay_status retained
 	
+on topic local $Season_topic
+do
+	if $Season = "Summer" then
+		$Season = "Winter"
+	else
+		$Season = "Summer"
+	endif
+	publish local "stat/season" $Season
+	publish remote "stat/season" $Season
+
 on topic local $Voltage_topic
 do
-	publish remote $Voltage_topic $this_data
-	publish local $status_topic $relay_status retained
-	publish remote $status_topic $relay_status retained
-
+	setvar $Volts = $this_data
 	setvar $int = csvstr($this_data, 0, ".")
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
 	
-	println "$run= "|$run
-	
 	if 542 > $fixed_point then
 		setvar $run = 0
+	endif
+	if $Season = "Winter" then
+		$run=0
 	endif
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
@@ -67,9 +84,24 @@ do
 		gpio_out 13 not ($relay_status)
 	endif
 
+	println "Minutes passed="|$run
+	
+
 % Checking timer
 on timer 1
 do
 	setvar $run = $run + 1
-	println "$run= "|$run
+	println "Minutes passed="|$run
+	if $run > 180 then
+		setvar $run = 180
+	endif
 	settimer 1 60000
+
+on timer 2
+do
+	publish local "stat/season" $Season
+	publish remote "stat/season" $Season
+	publish local $status_topic $relay_status
+	publish remote $status_topic $relay_status
+	publish remote $Voltage_topic $Volts
+	settimer 1 10000
