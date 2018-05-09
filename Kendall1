@@ -22,7 +22,6 @@ do
 
 	% Command topic
 	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
-	setvar $command_topic="cmnd/WaterHeater/POWER"
 	
 	% Voltage topic
 	setvar $Voltage_topic="tele/Voltage/VOLTS"
@@ -60,9 +59,11 @@ do
 	println "$run= "|$run
 	
 	if $fixed_point > 545 then
-		setvar $relay_status = 1
-		gpio_out 12 $relay_status
-		gpio_out 13 not ($relay_status)
+		if $run > 4 then
+			setvar $relay_status = 1
+			gpio_out 12 $relay_status
+			gpio_out 13 not ($relay_status)
+		endif
 	else
 		if $fixed_point > 509 then
 			setvar $run = 0
