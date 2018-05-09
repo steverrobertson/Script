@@ -57,6 +57,8 @@ do
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
 	
+	println "$run= "|$run
+	
 	if $fixed_point > 545 then
 		setvar $relay_status = 1
 		gpio_out 12 $relay_status
