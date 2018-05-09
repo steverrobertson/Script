@@ -54,11 +54,14 @@ on topic local $Season_topic
 do
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
+		println "Season="|$Season
 	else
 		setvar $Season = "Summer"
+		println "Season="|$Season
 	endif
 	publish local "stat/season" $Season
 	publish remote "stat/season" $Season
+	println "Season="|$Season
 
 on topic local $Voltage_topic
 do
