@@ -20,9 +20,6 @@ do
 	gpio_out 12 $relay_status
 	gpio_out 13 not ($relay_status)
 
-	% Command topic
-	% setvar $command_topic="/martinshome/switch/" | $device_number | "/command"
-	
 	% Voltage topic
 	setvar $Voltage_topic="tele/Voltage/VOLTS"
 
@@ -51,6 +48,8 @@ do
 on topic local $Voltage_topic
 do
 	publish remote $Voltage_topic $this_data
+	publish local $status_topic $relay_status retained
+	publish remote $status_topic $relay_status retained
 
 	setvar $int = csvstr($this_data, 0, ".")
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
@@ -58,24 +57,19 @@ do
 	
 	println "$run= "|$run
 	
-	if $fixed_point > 545 then
-		if $run > 4 then
-			setvar $relay_status = 1
-			gpio_out 12 $relay_status
-			gpio_out 13 not ($relay_status)
-		endif
-	else
-		if $fixed_point > 509 then
-			setvar $run = 0
-		endif
-	else
-		if 510 > $fixed_point then
-			setvar $relay_status = 0
-			gpio_out 12 $relay_status
-			setvar $run = 0
-			gpio_out 13 not ($relay_status)
-		endif
-   	endif
+	if 542 > $fixed_point then
+		setvar $run = 0
+	endif
+	if 510 > $fixed_point then
+		setvar $relay_status = 0
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
+	endif
+	if $run > 4 then
+		setvar $relay_status = 1
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
+	endif
 
 % Checking timer
 on timer 1
