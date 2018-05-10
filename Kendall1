@@ -17,6 +17,7 @@ do
 	% Status of the relay
 	setvar $relay_status=0
 	setvar $run=0
+	setvar $relayOnOff="Off"
 	gpio_out 12 $relay_status
 	gpio_out 13 not ($relay_status)
 
@@ -47,15 +48,12 @@ do
 
 % Now the events, checked whenever something happens
 
-% Is there a local command?
-	publish local $status_topic $relay_status retained
-	publish remote $status_topic $relay_status retained
-	
 on topic local $Season_topic
 do
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
 		setvar $relay_status = 0
+		setvar $relayOnOff="Off"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	else
@@ -79,11 +77,13 @@ do
 	endif
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
+		setvar $relayOnOff="Off"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
 	if $run > 4 then
 		setvar $relay_status = 1
+		setvar $relayOnOff="On"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
@@ -104,12 +104,13 @@ do
 	if $Season = "Winter" then
 		setvar $run=0
 		setvar $relay_status = 0
+		setvar $relayOnOff="On"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
 	publish local "stat/season" $Season
 	publish remote "stat/season" $Season
-	publish local $status_topic $relay_status
-	publish remote $status_topic $relay_status
+	publish local $status_topic $relayOnOff
+	publish remote $status_topic $relayOnOff
 	publish remote $Voltage_topic $Volts
 	settimer 2 10000
