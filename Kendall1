@@ -34,6 +34,7 @@ do
 
 	% local subscriptions once in 'init'
 	subscribe local $Voltage_topic
+	subscribe local $Season_topic
 	
 	settimer 1 500
 	settimer 2 1000
@@ -52,7 +53,6 @@ do
 	
 on topic local $Season_topic
 do
-	println "stat/season="|$Season
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
 	else
@@ -105,5 +105,5 @@ do
 	publish local $status_topic $relay_status
 	publish remote $status_topic $relay_status
 	publish remote $Voltage_topic $Volts
-	println "stat/season="|$Season
+	println "stat/season"|$Season
 	settimer 2 10000
