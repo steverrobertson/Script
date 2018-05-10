@@ -104,4 +104,5 @@ do
 	publish local $status_topic $relay_status
 	publish remote $status_topic $relay_status
 	publish remote $Voltage_topic $Volts
-	settimer 1 10000
+	println "stat/season="|$Season
+	settimer 2 10000
