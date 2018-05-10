@@ -47,14 +47,13 @@ do
 
 % Now the events, checked whenever something happens
 
-% Is there a local command?
-	publish local $status_topic $relay_status retained
-	publish remote $status_topic $relay_status retained
-	
 on topic local $Season_topic
 do
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
+		setvar $relay_status = 0
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
 	else
 		setvar $Season = "Summer"
 	endif
@@ -84,15 +83,13 @@ do
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
-
-	println "Minutes passed="|$run
+	% println "Minutes passed="|$run
 	
-
 % Checking timer
 on timer 1
 do
 	setvar $run = $run + 1
-	println "Minutes passed="|$run
+	% println "Minutes passed="|$run
 	if $run > 180 then
 		setvar $run = 180
 	endif
@@ -100,10 +97,20 @@ do
 
 on timer 2
 do
+	if $Season = "Winter" then
+		setvar $run=0
+		setvar $relay_status = 0
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
+	endif
 	publish local "stat/season" $Season
 	publish remote "stat/season" $Season
-	publish local $status_topic $relay_status
-	publish remote $status_topic $relay_status
+	if $relay_status = 0 then
+		publish local $status_topic "Off"
+		publish remote $status_topic "Off"
+	else
+		publish local $status_topic "On"
+		publish remote $status_topic "On"
+	endif
 	publish remote $Voltage_topic $Volts
-	println "stat/season"|$Season
 	settimer 2 10000
