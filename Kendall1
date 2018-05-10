@@ -52,6 +52,7 @@ do
 	
 on topic local $Season_topic
 do
+	println "stat/season="|$Season
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
 	else
