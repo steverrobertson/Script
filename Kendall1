@@ -47,7 +47,20 @@ do
 
 % Now the events, checked whenever something happens
 
-on topic $Season_topic
+on topic local $Season_topic
+do
+	if $Season = "Summer" then
+		setvar $Season = "Winter"
+		setvar $relay_status = 0
+		gpio_out 12 $relay_status
+		gpio_out 13 not ($relay_status)
+	else
+		setvar $Season = "Summer"
+	endif
+	publish local "stat/season" $Season
+	publish remote "stat/season" $Season
+
+on topic remote $Season_topic
 do
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
