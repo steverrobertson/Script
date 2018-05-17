@@ -70,8 +70,6 @@ do
 	else
 		setvar $Season = "Summer"
 	endif
-	publish local "stat/season" $Season
-	publish remote "stat/season" $Season
 
 on topic local $Voltage_topic
 do
