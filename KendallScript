@@ -125,5 +125,5 @@ do
 		publish local $status_topic "On"
 		publish remote $status_topic "On"
 	endif
-	$publish remote $Voltage_topic $Volts
+	publish remote $Voltage_topic $Volts
 	settimer 2 5000
