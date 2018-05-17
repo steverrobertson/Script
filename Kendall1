@@ -17,12 +17,11 @@ do
 	% Status of the relay
 	setvar $relay_status=0
 	setvar $run=0
-	setvar $relayOnOff="Off"
 	gpio_out 12 $relay_status
 	gpio_out 13 not ($relay_status)
 
 	% Voltage topic
-	setvar $Voltage_topic="tele/Voltage/VOLTS"
+	setvar $Voltage_topic="/system/voltage/VOLTS"
 
 	% Season topic
 	setvar $Season_topic="season/SET"
@@ -53,7 +52,6 @@ do
 	if $Season = "Summer" then
 		setvar $Season = "Winter"
 		setvar $relay_status = 0
-		setvar $relayOnOff="Off"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	else
@@ -69,7 +67,7 @@ do
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
 	
-	if 542 > $fixed_point then
+	if 534 > $fixed_point then
 		setvar $run = 0
 	endif
 	if $Season = "Winter" then
@@ -77,13 +75,11 @@ do
 	endif
 	if 510 > $fixed_point then
 		setvar $relay_status = 0
-		setvar $relayOnOff="Off"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
 	if $run > 4 then
 		setvar $relay_status = 1
-		setvar $relayOnOff="On"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
@@ -104,13 +100,17 @@ do
 	if $Season = "Winter" then
 		setvar $run=0
 		setvar $relay_status = 0
-		setvar $relayOnOff="On"
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
 	endif
 	publish local "stat/season" $Season
 	publish remote "stat/season" $Season
-	publish local $status_topic $relayOnOff
-	publish remote $status_topic $relayOnOff
-	publish remote $Voltage_topic $Volts
-	settimer 2 10000
+	if $relay_status = 0 then
+		publish local $status_topic "Off"
+		publish remote $status_topic "Off"
+	else
+		publish local $status_topic "On"
+		publish remote $status_topic "On"
+	endif
+	$publish remote $Voltage_topic $Volts
+	settimer 2 5000
