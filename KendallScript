@@ -67,7 +67,7 @@ do
 	setvar $frac = csvstr($this_data, 1, ".") | "0"
 	setvar $fixed_point = $int | substr($frac, 0, 1)
 	
-	if 542 > $fixed_point then
+	if 534 > $fixed_point then
 		setvar $run = 0
 	endif
 	if $Season = "Winter" then
@@ -77,15 +77,11 @@ do
 		setvar $relay_status = 0
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
-		publish local $status_topic "Off"
-		publish remote $status_topic "Off"
 	endif
 	if $run > 4 then
 		setvar $relay_status = 1
 		gpio_out 12 $relay_status
 		gpio_out 13 not ($relay_status)
-		publish local $status_topic "On"
-		publish remote $status_topic "On"
 	endif
 	% println "Minutes passed="|$run
 	
@@ -116,5 +112,5 @@ do
 		publish local $status_topic "On"
 		publish remote $status_topic "On"
 	endif
-	publish remote $Voltage_topic $Volts
-	settimer 2 10000
+	$publish remote $Voltage_topic $Volts
+	settimer 2 5000
