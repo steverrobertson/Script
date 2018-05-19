@@ -1,0 +1,40 @@
+% Config params, overwrite any previous settings from the commandline
+config ap_ssid 		MQTT_SERVICES
+config ap_password	stevieray01
+config ssid		GlenVista1CF0
+config password		stevieray01
+config ntp_server	1.de.pool.ntp.org
+config mqtt_host	m14.cloudmqtt.com
+config mqtt_port	19801
+config mqtt_user	htzkfqlx
+config mqtt_password	PLsADzYDYbdX
+%config speed		160
+
+% Now the initialization, this is done once after booting
+on init
+do
+
+	% $Voltage_topic="/system/voltage/VOLTS"
+
+	
+	settimer 1 500
+	settimer 2 1000
+
+% Now the MQTT client init, this is done each time the client connects
+on mqttconnect
+do
+	% remote subscriptions for each connection in 'mqttconnect'
+	publish remote $status_topic $relay_status retained
+
+% Now the events, checked whenever something happens
+
+	
+% Checking timer
+on timer 1
+do
+	println "ADC="|$adc
+	settimer 1 6000
+
+on timer 2
+do
+	settimer 2 5000
