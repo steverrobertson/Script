@@ -28,10 +28,6 @@ do
 
 % Now the events, checked whenever something happens
 
-% on topic local "system/biteme"
-% do
-	% println "ADC="|$adc
-
 	
 % Checking timer
 on timer 1
