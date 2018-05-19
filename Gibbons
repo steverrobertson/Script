@@ -15,15 +15,16 @@ on init
 do
 
 	% $Voltage_topic="/system/voltage/VOLTS"
-
-	
+	subscribe local "tele/WaterHeater/SENSOR"
+	setvar $Temp=0.0
 	settimer 1 500
 	settimer 2 1000
 
 % Now the MQTT client init, this is done each time the client connects
 
 % Now the events, checked whenever something happens
-
+on topic local "tele/WaterHeater/SENSOR"
+	println "temp="|json_parse("DS18B20", $Temp)
 	
 % Checking timer
 on timer 1
