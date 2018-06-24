@@ -1,6 +1,10 @@
 % Config params, overwrite any previous settings from the commandline
 config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
+config ip		192.168.1.6
+config netmask		255.255.255.0
+config gw		192.168.1.1
+config dns		8.8.8.8
 config ssid		GlenVista1CF0
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
@@ -16,22 +20,85 @@ do
 
 	% $Voltage_topic="/system/voltage/VOLTS"
 	subscribe local "tele/WaterHeater/SENSOR"
-	setvar $Temp=0.0
+	subscribe local "tele/Woodstove/SENSOR"
+	setvar $WoodstoveTemp = 000
+	setvar $int = 0
+	setvar $frac = 0
+	setvar $fixed_point = 0 
+	setvar $WaterheaterTemp = 0
+	setvar $TimeLapsed = 0
+	setvar $SysVolts = 0
+
 	settimer 1 500
 	settimer 2 1000
 
 % Now the MQTT client init, this is done each time the client connects
+on mqttconnect
+do
+	println "MQTT Client connected"
+	publish remote "Battery/Volts" $int
+
 
 % Now the events, checked whenever something happens
+on topic local "tele/WaterHeater/STATE"
+do
+	publish remote "tele/WaterHeater/STATE" $this_data
+
 on topic local "tele/WaterHeater/SENSOR"
-	println "temp="|json_parse("DS18B20", $Temp)
-	
+do
+	publish remote "tele/WaterHeater/SENSOR" $this_data
+	setvar $int = substr($this_data, 55, 6)
+	setvar $int = csvstr($int, 0, ".")
+	setvar $frac = csvstr($this_data, 1, ".") | "0"
+	setvar $fixed_point = $int | substr($frac, 0, 1)
+	setvar $WaterheaterTemp = $fixed_point
+	if $WoodstoveTemp > $WaterheaterTemp then
+		publish local "cmnd/WaterHeater/POWER" "ON"
+		% publish remote "cmnd/WaterHeater/POWER" "ON"
+	endif
+
+on topic local "tele/Woodstove/STATE"
+do
+	publish remote "tele/Woodstove/STATE" $this_data
+
+on topic local "tele/Woodstove/SENSOR"
+do
+	publish remote "tele/Woodstove/SENSOR" $this_data
+	% json_parse("DS18B20.Temperature", $Temp)
+	setvar $int = substr($this_data, 55, 6)
+	setvar $int = csvstr($int, 0, ".")
+	setvar $frac = csvstr($this_data, 1, ".") | "0"
+	setvar $fixed_point = $int | substr($frac, 0, 1)
+	% println "temperature/10="|$fixed_point
+	setvar $WoodstoveTemp = $fixed_point
+	setvar $int = "ON"
+	if 1150 > $fixed_point then
+		setvar $int = "OFF"
+	endif
+	if $WoodstoveTemp > $WaterheaterTemp then
+		setvar $int = "ON"
+	endif
+	publish local "cmnd/WaterHeater/POWER" $int
+	publish remote "cmnd/WaterHeater/POWER" $int
+	%Below was Timer1 unreliable
+	setvar $frac = $adc * 100
+	setvar $fixed_point = $frac div 150
+	setvar $int = substr($fixed_point, 0, 2) | "." | substr($fixed_point, 2, 1)
+	% println "ADC="|$adc
+	if 50 > $int then
+		publish local "cmnd/Woodstove/POWER" "OFF"
+	endif
+	% if 54 > $int then
+	%	publish local "cmnd/Woodstove/POWER" "ON"
+	% endif
+	publish local "Battery/Volts" $int
+	publish remote "Battery/Volts" $int
+
 % Checking timer
 on timer 1
 do
-	println "ADC="|$adc
+	setvar $frac = $adc * 100
 	settimer 1 6000
 
 on timer 2
 do
-	settimer 2 5000
