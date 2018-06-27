@@ -1,4 +1,16 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
 % Config params, overwrite any previous settings from the commandline
 config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
