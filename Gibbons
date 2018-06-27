@@ -1,3 +1,16 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
 % Config params, overwrite any previous settings from the commandline
 config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
@@ -5,7 +18,7 @@ config ip		192.168.1.6
 config netmask		255.255.255.0
 config gw		192.168.1.1
 config dns		8.8.8.8
-config ssid		GlenVista1CF0
+config ssid		NetgearN300
 config password		stevieray01
 config ntp_server	1.de.pool.ntp.org
 config mqtt_host	m14.cloudmqtt.com
@@ -28,9 +41,6 @@ do
 	setvar $WaterheaterTemp = 0
 	setvar $TimeLapsed = 0
 	setvar $SysVolts = 0
-
-	settimer 1 500
-	settimer 2 1000
 
 % Now the MQTT client init, this is done each time the client connects
 on mqttconnect
@@ -85,6 +95,7 @@ do
 	setvar $fixed_point = $frac div 150
 	setvar $int = substr($fixed_point, 0, 2) | "." | substr($fixed_point, 2, 1)
 	% println "ADC="|$adc
+	publish remote "Battery/Volts" $int
 	if 50 > $int then
 		publish local "cmnd/Woodstove/POWER" "OFF"
 	endif
@@ -94,11 +105,3 @@ do
 	publish local "Battery/Volts" $int
 	publish remote "Battery/Volts" $int
 
-% Checking timer
-on timer 1
-do
-	setvar $frac = $adc * 100
-	settimer 1 6000
-
-on timer 2
-do
