@@ -14,7 +14,7 @@
 % Config params, overwrite any previous settings from the commandline
 config ap_ssid 		MQTT_SERVICES
 config ap_password	stevieray01
-config ip		192.168.1.6
+config ip		192.168.1.100
 config netmask		255.255.255.0
 config gw		192.168.1.1
 config dns		8.8.8.8
@@ -104,4 +104,3 @@ do
 	% endif
 	publish local "Battery/Volts" $int
 	publish remote "Battery/Volts" $int
-
